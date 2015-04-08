@@ -7,6 +7,26 @@
 		<script type="text/javascript" src="d3/d3.v3.js"></script>
 	</head>
 	<body>
-		<p>Hello World!</p>
+		<script type="text/javascript">
+			var dataset = [2, 4, 6, 8, 10];
+			d3.select("body").selectAll("p")
+				.data(dataset)
+				.enter()
+				.append("p")
+				.text(function(d) {
+					if (d < 5) {
+						return "I have data going up to number " + d + ".";
+					} else if (d == 6) {
+						return "I have data going up to number " + d + "..";
+					} else {
+						return "I have data going up to number " + d + "!";
+					}
+				})
+				.style("color", function(d) {
+					if (d % 4 == 0) {
+						return "teal";
+					}
+				});
+		</script>
 	</body>
 </html>
