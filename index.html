@@ -9,23 +9,39 @@
 	<body>
 		<script type="text/javascript">
 		
+			var w = 500;
+			var h = 100;
+			
 			var dataset = [];
-			for (var i = 0; i < 25; i++) {
-				var newNum = Math.random() * 10;
+			for (var i = 0; i < 5; i++) {
+				var newNum = (Math.random() * 21) + 5;
 				dataset.push(newNum);
 			}
 			
-			d3.select("body").selectAll("div")
+			// var dataset = [ 5, 10, 15, 20, 25 ];	
+					
+			var svg = d3.select("body").append("svg");
+			
+			svg.attr("width", w)
+				.attr("height", h);
+				
+			var circles = svg.selectAll("circle")
 				.data(dataset)
 				.enter()
-				.append("div")
-				.style("display", "inline-block")
-				.style("width", "20px")
-				.style("height", function(d) {
-					return (d * 5) + "px";
+				.append("circle");
+			
+			circles.attr("cx", function(d, i) {
+				return (i * 50) + 30;
 				})
-				.style("margin-right", "2px")
-				.style("background-color", "coral");
+				.attr("cy", h / 2)
+				.attr("r", function(d) {
+					return d;
+				})
+				.attr("fill", "coral")
+				.attr("stroke", "teal")
+				.attr("stroke-width", function(d) {
+					return d / 4;
+				});
 		</script>
 	</body>
 </html>
