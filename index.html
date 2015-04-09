@@ -8,25 +8,24 @@
 	</head>
 	<body>
 		<script type="text/javascript">
-			var dataset = [2, 4, 6, 8, 10];
-			d3.select("body").selectAll("p")
+		
+			var dataset = [];
+			for (var i = 0; i < 25; i++) {
+				var newNum = Math.random() * 10;
+				dataset.push(newNum);
+			}
+			
+			d3.select("body").selectAll("div")
 				.data(dataset)
 				.enter()
-				.append("p")
-				.text(function(d) {
-					if (d < 5) {
-						return "I have data going up to number " + d + ".";
-					} else if (d == 6) {
-						return "I have data going up to number " + d + "..";
-					} else {
-						return "I have data going up to number " + d + "!";
-					}
+				.append("div")
+				.style("display", "inline-block")
+				.style("width", "20px")
+				.style("height", function(d) {
+					return (d * 5) + "px";
 				})
-				.style("color", function(d) {
-					if (d % 4 == 0) {
-						return "teal";
-					}
-				});
+				.style("margin-right", "2px")
+				.style("background-color", "coral");
 		</script>
 	</body>
 </html>
