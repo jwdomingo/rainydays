@@ -14,6 +14,7 @@
 			div#update { width: 90%; margin: 5% auto 0; display: block; }
 			p 		   { display: inline-block; padding: 3px 6px; cursor: pointer; }
 			p:hover	   { background-color: cornflowerblue; color: white; }
+
 		</style>
 	</head>
 
@@ -52,11 +53,11 @@
 		////////////
 
 			var svg = d3.select("div").append("svg")
-									.attr({
-										width: w,
-										height: h
-									})
-									.call(responsivefy);
+				.attr({
+					width: w,
+					height: h
+				})
+				.call(responsivefy);
 
 			var bars = svg.selectAll("rect")
 				.data(dataset)
@@ -113,6 +114,8 @@
 
 					svg.selectAll("rect")
 						.data(dataset)
+						.transition()
+						.delay(500)
 						.attr({
 							y: 		function(d) {
 										return h - yScale(d) },
@@ -122,6 +125,8 @@
 
 					svg.selectAll("text")
 						.data(dataset)
+						.transition()
+						.delay(500)
 						.text(function(d) {
 							return Math.floor(d); })
 						.attr({
