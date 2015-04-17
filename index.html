@@ -6,46 +6,154 @@
 		<meta charset="UTF-8">
 		<script type="text/javascript" src="d3/d3.v3.js"></script>
 		<style>
-			body {
-				margin: 0;
-				padding: 0;
-			}
-			
-			div {
-				max-width: 98%;
-				margin: 0 auto;
-				display: block;
-			}
-			
-			svg {
-				position: fixed;
-				display: block;
-				bottom: 0;
-			}
+
+			body	   { margin: 0; padding: 0; }
+			div 	   { max-width: 98%; margin: 0 auto; display: block; }
+			svg 	   { position: fixed; display: block; bottom: 0; }
+			rect:hover { fill: teal; transition: ease;}
+			div#update { width: 90%; margin: 5% auto 0; display: block; }
+			p 		   { display: inline-block; padding: 3px 6px; cursor: pointer; }
+			p:hover	   { background-color: cornflowerblue; color: white; }
 		</style>
 	</head>
+
 	<body>
 		<div></div>
+		<div id="update"><p>// Click here to randomize bars</p></div>
 		<script type="text/javascript">
+			var w = 700;
+			var h = 350;
+			var minBar = 5;
+			var padding = 1;
+
+		  ////////////
+		 /*  DATA  */
+		////////////
+
+			var dataset = [];
+
+			for (var i = 0; i < 25; i++) {
+				var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
+				dataset.push(newNum);
+			}
+
+		  //////////////
+		 /*  SCALES  */
+		//////////////
+
+			var xScale = d3.scale.ordinal()
+				.domain(d3.range(dataset.length))									 .rangeRoundBands([0, w],  0.05);
+
+			var yScale = d3.scale.linear()
+				.domain([0, d3.max(dataset)])													 .range([0, h]);
+
+		  ////////////
+		 /*  BARS  */
+		////////////
+
+			var svg = d3.select("div").append("svg")
+									.attr({
+										width: w,
+										height: h
+									})
+									.call(responsivefy);
+
+			var bars = svg.selectAll("rect")
+				.data(dataset)
+				.enter().append("rect")
+				.attr("x", function(d, i) {
+					return xScale(i)
+				});
+
+			bars.attr({
+				x: function(d, i) {
+					return xScale(i); },
+				y: function(d, i) {
+					return h - yScale(d); },
+				"width":  xScale.rangeBand(),
+				height: function(d) {
+					return yScale(d); },
+				fill: function(d) {
+					return "rgb(255," + Math.floor(d * 6) + ",150)"; }
+			});
+
+		  //////////////
+		 /*  LABELS  */
+		//////////////
+
+			svg.selectAll("text")
+				.data(dataset)
+				.enter().append("text")
+				.text(function(d) {
+					return Math.floor(d);
+				})
+				.attr({
+					"font-family":	"sans-serif",
+					"font-size": 	"11px",
+					"text-anchor": 	"middle",
+					fill: 			"white",
+					x: 	function(d, i) {
+							return xScale(i) + xScale.rangeBand() / 2 },
+					y: 	function(d) {
+							return h - yScale(d) + 15; }
+				});
+
+		  ///////////////////////
+		 /*  EVENT LISTENERS  */
+		///////////////////////
+
+			d3.select("p")
+				.on("click", function() {
+					dataset = [];
+
+					for (var i = 0; i < 25; i++) {
+						var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
+						dataset.push(newNum);
+					}
+
+					svg.selectAll("rect")
+						.data(dataset)
+						.attr({
+							y: 		function(d) {
+										return h - yScale(d) },
+							height: function(d) {
+										return yScale(d); }
+						});
+
+					svg.selectAll("text")
+						.data(dataset)
+						.text(function(d) {
+							return Math.floor(d); })
+						.attr({
+							x: 	function(d, i) {
+									return xScale(i) + xScale.rangeBand() / 2 },
+							y: 	function (d) {
+								 	return h - yScale(d) + 15; }
+						});
+				});
+
+		  /////////////////////////
+		 /*  Fx : RESPONSIVEFY  */
+		/////////////////////////
 			function responsivefy(svg) {
 			    // get container + svg aspect ratio
 			    var container = d3.select(svg.node().parentNode),
 			        width = parseInt(svg.style("width")),
 			        height = parseInt(svg.style("height")),
 			        aspect = width / height;
-			
+
 			    // add viewBox and preserveAspectRatio properties,
 			    // and call resize so that svg resizes on inital page load
 			    svg.attr("viewBox", "0 0 " + width + " " + height)
 			        .attr("perserveAspectRatio", "xMinYMid")
 			        .call(resize);
-			
-			    // to register multiple listeners for same event type, 
+
+			    // to register multiple listeners for same event type,
 			    // you need to add namespace, i.e., 'click.foo'
 			    // necessary if you call invoke this function for multiple svgs
 			    // api docs: https://github.com/mbostock/d3/wiki/Selections#on
 			    d3.select(window).on("resize." + container.attr("id"), resize);
-			
+
 			    // get width of container and resize svg to fit it
 			    function resize() {
 			        var targetWidth = parseInt(container.style("width"));
@@ -53,68 +161,6 @@
 			        svg.attr("height", Math.round(targetWidth / aspect));
 			    }
 			}
-		
-			var w = 700;
-			var h = 400;
-			var minBar = 5;
-			var padding = 1;
-			
-
-			var dataset = [];
-			
-			for (var i = 0; i < 25; i++) {
-				var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
-				dataset.push(newNum);
-			}
-			
-			//var dataset = [ 5, 10, 15, 20, 25 ];	
-			
-			var svg = d3.select("div").append("svg")
-				.attr({
-					width: w,
-					height: h
-				})
-				.call(responsivefy);
-				
-			var bars = svg.selectAll("rect")
-				.data(dataset)
-				.enter().append("rect");
-			
-			bars.attr({
-				x: function(d, i) {
-					return i * (w / dataset.length); },
-				y: function(d, i) {
-					return h - (d * 10); },
-				width: function(d, i) {
-					return (w / dataset.length) - padding; },
-				height: function(d) {
-					return (d * 10); },
-				fill: function(d) {
-					return "rgb(255," + Math.floor(d * 6) + ",150)";
-				}
-			});		
-			
-			svg.selectAll("text")
-				.data(dataset)
-				.enter().append("text")
-				.text(function(d) {
-					return Math.floor(d * 10);
-				})
-				.attr({
-					"font-family": "sans-serif",
-					"font-size": "11px",
-					fill: "white",
-					x: function(d, i) {
-						var barH = Math.floor(d * 10);
-						if (barH < 100) {
-							return i * (w / dataset.length) + 7.5;
-						} else {
-							return i * (w / dataset.length) + 4.5;
-						}
-					},
-					y: function(d, i) {
-					return h - (d * 10) + 15; }
-				});					
 		</script>
 	</body>
 </html>
