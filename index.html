@@ -9,10 +9,10 @@
 
 			body	   { margin: 0; padding: 0; }
 			div 	   { max-width: 99÷%; min-height: 100%; margin: 0 auto; display: block; }
-			svg 	   { position: fixed; display: block; bottom: 0; }
+			svg 	   { z-index: -1; position: fixed; display: block; bottom: 0; }
 			rect:hover { fill: teal; transition: ease;}
 			div#update { width: 95%; margin: 1.5% auto 0; display: block; }
-			p 		   { display: inline-block; padding: 3px 6px; cursor: pointer; }
+			p 		   { display: inline-block; padding: 3px 6px; cursor: pointer; background-color: rgba(255,255,255,0.65) }
 			p:hover	   { background-color: cornflowerblue; color: white; }
 
 		</style>
@@ -24,8 +24,9 @@
 		<script type="text/javascript">
 			var w = 700;
 			var h = 350;
-			var minBar = 4;
-			var padding = 1;
+			var numBars = 30;
+			var maxBar = 30;
+			var minBar = 2;
 
 		  ////////////
 		 /*  DATA  */
@@ -33,8 +34,8 @@
 
 			var dataset = [];
 
-			for (var i = 0; i < 25; i++) {
-				var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
+			for (var i = 0; i <= numBars; i++) {
+				var newNum = Math.floor(Math.random() * (maxBar - minBar + 1)) + minBar;
 				dataset.push(newNum);
 			}
 
@@ -43,7 +44,7 @@
 		//////////////
 
 			var xScale = d3.scale.ordinal()
-				.domain(d3.range(dataset.length))									 .rangeRoundBands([0, w],  0.05);
+				.domain(d3.range(dataset.length))									 .rangeRoundBands([0, w], 0.05);
 
 			var yScale = d3.scale.linear()
 				.domain([0, d3.max(dataset)])													 .range([0, h]);
@@ -107,31 +108,32 @@
 				.on("click", function() {
 					dataset = [];
 
-					for (var i = 0; i < 25; i++) {
-						var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
+					for (var i = 0; i <= numBars; i++) {
+						var newNum = Math.floor(Math.random() * (maxBar - minBar + 1)) + minBar;
 						dataset.push(newNum);
 					}
 
-					yScale = d3.scale.linear()
-						.domain([0, d3.max(dataset)])													 .range([0, h]);
+					yScale.domain([0, d3.max(dataset)]);
 
 					svg.selectAll("rect")
 						.data(dataset)
 						.transition()
-						.delay(500)
+						.duration(500)
 						.attr({
 							y: 		function(d) {
 										return h - yScale(d) },
 							height: function(d) {
-										return yScale(d); }
+										return yScale(d); },
+							fill: function(d) {
+								return "rgb(255, " + Math.floor(d * 6) + ", 150)"; }
 						});
 
 					svg.selectAll("text")
 						.data(dataset)
 						.transition()
-						.delay(500)
+						.duration(500)
 						.text(function(d) {
-							return Math.floor(d); })
+							return d; })
 						.attr({
 							x: 	function(d, i) {
 									return xScale(i) + xScale.rangeBand() / 2 },
