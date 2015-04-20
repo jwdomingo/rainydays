@@ -8,10 +8,10 @@
 		<style>
 
 			body	   { margin: 0; padding: 0; }
-			div 	   { max-width: 98%; margin: 0 auto; display: block; }
+			div 	   { max-width: 99÷%; min-height: 100%; margin: 0 auto; display: block; }
 			svg 	   { position: fixed; display: block; bottom: 0; }
 			rect:hover { fill: teal; transition: ease;}
-			div#update { width: 90%; margin: 5% auto 0; display: block; }
+			div#update { width: 95%; margin: 1.5% auto 0; display: block; }
 			p 		   { display: inline-block; padding: 3px 6px; cursor: pointer; }
 			p:hover	   { background-color: cornflowerblue; color: white; }
 
@@ -24,7 +24,7 @@
 		<script type="text/javascript">
 			var w = 700;
 			var h = 350;
-			var minBar = 5;
+			var minBar = 4;
 			var padding = 1;
 
 		  ////////////
@@ -111,6 +111,9 @@
 						var newNum = (Math.random() * (h / 11 - minBar + 1)) + minBar;
 						dataset.push(newNum);
 					}
+
+					yScale = d3.scale.linear()
+						.domain([0, d3.max(dataset)])													 .range([0, h]);
 
 					svg.selectAll("rect")
 						.data(dataset)
